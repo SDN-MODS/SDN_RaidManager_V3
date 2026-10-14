@@ -41,6 +41,11 @@ modded class ActionDestroyCombinationLock
 }
 
 // Compatibilidade com mods de CodeLock comuns (ex: CodeLock)
+// Descomente o bloco abaixo (remova /* e */) APENAS SE o seu servidor utilizar
+// o mod "CodeLock" original (cuja ação é ActionDestroyCodeLock).
+// Caso contrário, o servidor não compilará informando "Unknown type".
+
+/*
 modded class ActionDestroyCodeLock
 {
 	override bool ActionCondition(PlayerBase player, ActionTarget target, ItemBase item)
@@ -80,3 +85,4 @@ modded class ActionDestroyCodeLock
 		return true;
 	}
 }
+*/
