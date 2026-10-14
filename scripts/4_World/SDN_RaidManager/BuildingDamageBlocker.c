@@ -1,7 +1,5 @@
 modded class BaseBuildingBase
 {
-	private static ref map<string, int> s_RaidBlockedMsgCooldown = new map<string, int>();
-
 	override void EEInit()
 	{
 		super.EEInit();
@@ -84,37 +82,9 @@ modded class BaseBuildingBase
 			player = PlayerBase.Cast(source.GetHierarchyRootPlayer());
 		}
 
-		if (!player)
+		if (player)
 		{
-			return;
+			manager.NotifyPlayerRaidBlocked(player);
 		}
-
-		string message = manager.GetRaidUnavailableMessage();
-		if (message == "")
-		{
-			return;
-		}
-
-		int cooldownMs = manager.GetPlayerMessageCooldownSeconds() * 1000;
-		int nowMs = GetGame().GetTime();
-
-		string playerKey = "unknown";
-		PlayerIdentity identity = player.GetIdentity();
-		if (identity)
-		{
-			playerKey = identity.GetPlainId();
-		}
-
-		int nextAllowedMs = 0;
-		if (s_RaidBlockedMsgCooldown.Find(playerKey, nextAllowedMs))
-		{
-			if (nowMs < nextAllowedMs)
-			{
-				return;
-			}
-		}
-
-		s_RaidBlockedMsgCooldown.Set(playerKey, nowMs + cooldownMs);
-		player.MessageStatus(message);
 	}
 }
