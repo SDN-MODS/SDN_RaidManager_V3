@@ -7,10 +7,13 @@ modded class ActionDestroyCombinationLock
 			return false;
 		}
 
+		SDN_RaidManagerManager manager = SDN_RaidManagerManager.GetInstance();
+		if (!manager)
+			return true;
+
 		if (GetGame() && GetGame().IsServer())
 		{
-			SDN_RaidManagerManager manager = SDN_RaidManagerManager.GetInstance();
-			if (manager && manager.IsEnabled() && !manager.IsSDN_RaidManager())
+			if (manager.IsEnabled() && !manager.IsSDN_RaidManager())
 			{
 				if (player)
 				{
@@ -33,9 +36,15 @@ modded class ActionDestroyCombinationLock
 				return false;
 			}
 		}
-		// on client, we can't reliably know the raid state without sending RPCs,
-		// but since the server blocks it, the action won't complete.
-		// Returning true on client allows the prompt to appear, but execution will fail on server.
+		else if (GetGame() && GetGame().IsClient())
+		{
+			// No cliente, checamos o estado que foi sincronizado via RPC
+			if (!manager.GetClientRaidActive())
+			{
+				return false; // Esconde a opção se o raid não estiver ativo
+			}
+		}
+
 		return true;
 	}
 }

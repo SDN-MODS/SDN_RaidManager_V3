@@ -14,6 +14,56 @@ class SDN_RaidManagerManager
 	private int m_LastHeartbeatLogMs = 0;
 
 	private string m_LastConfigContent = "";
+
+	private bool m_ClientRaidActive = false; // Cliente guarda estado aqui
+
+	void SetClientRaidActive(bool state)
+	{
+		m_ClientRaidActive = state;
+	}
+
+	bool GetClientRaidActive()
+	{
+		return m_ClientRaidActive;
+	}
+
+	void SyncStateToAll()
+	{
+		if (!GetGame() || !GetGame().IsServer())
+		{
+			return;
+		}
+
+		bool raidNow = IsSDN_RaidManager();
+
+		array<Man> players = new array<Man>;
+		GetGame().GetPlayers(players);
+		foreach (Man player : players)
+		{
+			if (player && player.GetIdentity())
+			{
+				ScriptRPC rpc = new ScriptRPC();
+				rpc.Write(raidNow);
+				rpc.Send(player, 1899911, true, player.GetIdentity());
+			}
+		}
+	}
+
+	void SyncStateToPlayer(Man player)
+	{
+		if (!GetGame() || !GetGame().IsServer())
+		{
+			return;
+		}
+
+		if (player && player.GetIdentity())
+		{
+			bool raidNow = IsSDN_RaidManager();
+			ScriptRPC rpc = new ScriptRPC();
+			rpc.Write(raidNow);
+			rpc.Send(player, 1899911, true, player.GetIdentity());
+		}
+	}
 	private string m_LastWebhookUrl = "";
 
 	private RestContext m_DiscordContext;
@@ -336,6 +386,7 @@ class SDN_RaidManagerManager
 		}
 
 		UpdateAllBasesDamageState(raidNow);
+		SyncStateToAll();
 	}
 
 	private void LogHeartbeatIfNeeded()
