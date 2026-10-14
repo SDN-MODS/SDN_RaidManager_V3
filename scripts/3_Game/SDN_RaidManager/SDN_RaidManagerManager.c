@@ -102,40 +102,22 @@ class SDN_RaidManagerManager
 		return m_Config.PlayerMessageCooldownSeconds;
 	}
 
-	void NotifyPlayerRaidBlocked(PlayerBase player)
+	bool CanNotifyPlayer(string playerKey)
 	{
-		if (!player)
-		{
-			return;
-		}
-
-		string message = GetRaidUnavailableMessage();
-		if (message == "")
-		{
-			return;
-		}
-
 		int cooldownMs = GetPlayerMessageCooldownSeconds() * 1000;
 		int nowMs = GetGame().GetTime();
-
-		string playerKey = "unknown";
-		PlayerIdentity identity = player.GetIdentity();
-		if (identity)
-		{
-			playerKey = identity.GetPlainId();
-		}
 
 		int nextAllowedMs = 0;
 		if (m_RaidBlockedMsgCooldown.Find(playerKey, nextAllowedMs))
 		{
 			if (nowMs < nextAllowedMs)
 			{
-				return;
+				return false;
 			}
 		}
 
 		m_RaidBlockedMsgCooldown.Set(playerKey, nowMs + cooldownMs);
-		player.MessageStatus(message);
+		return true;
 	}
 
 

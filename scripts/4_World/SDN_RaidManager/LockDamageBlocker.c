@@ -12,7 +12,24 @@ modded class ActionDestroyCombinationLock
 			SDN_RaidManagerManager manager = SDN_RaidManagerManager.GetInstance();
 			if (manager && manager.IsEnabled() && !manager.IsSDN_RaidManager())
 			{
-				manager.NotifyPlayerRaidBlocked(player);
+				if (player)
+				{
+					string message = manager.GetRaidUnavailableMessage();
+					if (message != "")
+					{
+						string playerKey = "unknown";
+						PlayerIdentity identity = player.GetIdentity();
+						if (identity)
+						{
+							playerKey = identity.GetPlainId();
+						}
+
+						if (manager.CanNotifyPlayer(playerKey))
+						{
+							player.MessageStatus(message);
+						}
+					}
+				}
 				return false;
 			}
 		}
@@ -38,7 +55,24 @@ modded class ActionDestroyCodeLock
 			SDN_RaidManagerManager manager = SDN_RaidManagerManager.GetInstance();
 			if (manager && manager.IsEnabled() && !manager.IsSDN_RaidManager())
 			{
-				manager.NotifyPlayerRaidBlocked(player);
+				if (player)
+				{
+					string message = manager.GetRaidUnavailableMessage();
+					if (message != "")
+					{
+						string playerKey = "unknown";
+						PlayerIdentity identity = player.GetIdentity();
+						if (identity)
+						{
+							playerKey = identity.GetPlainId();
+						}
+
+						if (manager.CanNotifyPlayer(playerKey))
+						{
+							player.MessageStatus(message);
+						}
+					}
+				}
 				return false;
 			}
 		}

@@ -84,7 +84,21 @@ modded class BaseBuildingBase
 
 		if (player)
 		{
-			manager.NotifyPlayerRaidBlocked(player);
+			string message = manager.GetRaidUnavailableMessage();
+			if (message != "")
+			{
+				string playerKey = "unknown";
+				PlayerIdentity identity = player.GetIdentity();
+				if (identity)
+				{
+					playerKey = identity.GetPlainId();
+				}
+
+				if (manager.CanNotifyPlayer(playerKey))
+				{
+					player.MessageStatus(message);
+				}
+			}
 		}
 	}
 }
